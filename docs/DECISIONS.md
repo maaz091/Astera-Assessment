@@ -51,3 +51,11 @@ Open delivery facts: applicant name/university/batch; employer timezone if deadl
 ## Approved foundation refinement
 
 Next.js replaces Vite at the user's implementation instruction. Use App Router paths and static export (`out/`), not hash routing; no backend features. Reference: https://nextjs.org/docs/app/guides/static-exports . Retain React, TypeScript, native SVG and Lucide. Desktop pipeline must use directional arrow connections, selected outline plus label, and explicit upstream/downstream context. Prioritize inspect → edit Join/Filter → validate → save → rerun → updated data over animation. Keep three KPIs, two charts, four steps. Chat landing stays business-first; failure context belongs with answers and Data trail, prominently explaining retained last-success data.
+
+## Neutral Carbon visual redesign & discarded-experiment log (for R18 note)
+
+Supersedes the earlier `Fieldnotes light palette` decision and `dark mode` exclusion:
+
+1. **Discarded UI iteration 1 — Green-and-cream Fieldnotes (`9f07c79`–`068a5ff`)**: Implemented warm `#F6F5F1`/`#EFEFE9` surfaces, `#176B5B` forest-green bars/buttons, and individual bordered KPI/chart cards. Visually inspected at `1440px` and `375px` and rejected because unloaded `Inter` fell back to `Segoe UI` on Windows, uniform white boxes compressed hierarchy, `max * 1.1` produced `$397k`/`$484k` chart ceilings, and stacked mobile chrome pushed KPIs below the fold.
+2. **Discarded UI iteration 2 — Graphite/Signal `/design-lab` prototype**: Built and inspected an isolated dark `/design-lab` trial using navy-tinted surfaces (`#0E1117`/`#171C25`), periwinkle/coral two-tone bars, monospace labels, nested inner plot wells, and pill badges on deltas/counts. Rejected and removed because multi-colour accents, nested borders, and badge proliferation read as generic AI-dashboard decoration rather than restrained enterprise software.
+3. **Adopted system — Neutral Carbon (`f59b7b2`, `docs/DESIGN_SYSTEM.md`)**: Pure neutral carbon surfaces (`#101012`, `#141416`, `#19191C`, `#232326`, `#303034`), a single `#8EA8D8` cool-blue accent, self-hosted `Geist Sans` (`400/500/600`) with `tabular-nums`, whitespace-and-hairline KPI presentation, round chart scales (`$0–$400k` / `$0–$450k`), and plain sentence-case metadata. AI tools used across stages now include OpenAI Codex and Google Antigravity.

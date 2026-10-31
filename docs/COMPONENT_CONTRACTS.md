@@ -82,3 +82,20 @@ Build with Vite to dist, relative asset base `./`, hash routes. README provides 
 ## Foundation implementation override
 
 User authorized Next.js foundation and Chat only. App Router paths replace hash routes; static export replaces Vite dist. Dashboard and Pipeline Detail remain deferred. Shared ChartCard, Button, Badge, Card and Trail are exercised by /components and /style-guide. Chat owns versioned local persistence pending integration with the future shared reducer.
+
+## Current implemented module map (post-Dashboard & Neutral Carbon redesign)
+
+Agents implementing Pipeline Detail or final packaging should build on the live Next.js App Router modules below rather than creating duplicate parallel directories from the phase-0 table:
+
+| File | Current exports & responsibilities |
+| --- | --- |
+| `app/layout.tsx` | Loads self-hosted `Geist` (`400`, `500`, `600`, `--font-sans`) via `next/font/google` and wraps routes in `Shell`. |
+| `app/globals.css` | Neutral Carbon CSS variables (`--canvas: #101012` through `--accent: #8EA8D8`), typography, shell/rail/mobile dock, hairline `.kpi-grid`, charts, composer, `Trail` dialog, and reusable `.pipeline-*` / `.inspector-*` classes. |
+| `src/data.ts` | Canonical `regions`, `sales`, `Query`, `parse`, `series`, `kpis`, `summary`, `scopeLabel`, `money`, `percent`, `isQuery`. |
+| `src/persistence.ts` | Validated `localStorage` (`studio-chat-v1`) + session-memory fallback via `readChat` and `writeChat`. |
+| `src/ui.tsx` | `Button` (`primary`, `secondary`, `ghost`), `Badge` (execution statuses only), `Card`, `Trail` (4-step lineage `<dialog>`), `PipelineSequencePreview` (directional step chain + inspector pattern), and `Shell`. |
+| `src/charts.tsx` | `MonthlyChart` (responsive `ResizeObserver` SVG with `$0–$450k` / `$0–$150k` round ticks and point labels) and `ValuesTable` (`Region/Month`, `Revenue`, `Target`, `Attainment`). |
+| `src/chat.tsx` | `ChartCard` (shared across Chat, Dashboard overview, Saved from Chat, and `/components/`) and default `Chat` view (`/`). |
+| `src/dashboard.tsx` | `KpiCard` (`.kpi-item` inside hairline `.kpi-grid`) and default `Dashboard` view (`/dashboard/` with `?period=&region=` URL sync). |
+| `app/style-guide/page.tsx` | Live Neutral Carbon palette, contrast ratios, typography specimens, and status showcase (`/style-guide/`). |
+| `app/components/page.tsx` | Shared buttons, status indicators, KPI strip, chart cards, `Trail`, and `PipelineSequencePreview` (`/components/`). |

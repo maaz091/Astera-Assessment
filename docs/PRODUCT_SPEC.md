@@ -112,3 +112,7 @@ Non-goals: real AI, backend, real file connections, SQL editing, node creation/r
 ## Approved refinement
 
 Desktop step connectors have arrowheads in reading order; selected step has a reserved 2px teal outline and Selected label. Inspector identifies upstream and downstream steps by name. Failed latest runs never block Chat or Dashboard: answer/chart warnings explicitly retain last-success data and link to Data trail. Keep landing welcoming and business-first. Essential delivery priority: inspect → edit Join/Filter → validate → save → rerun → updated status/data. Scope remains three KPIs, two charts, four steps.
+
+## Approved Neutral Carbon visual override
+
+At the user's explicit instruction (`f59b7b2`), the visual direction moved from light/teal to the **Neutral Carbon** dark analytical system (`docs/DESIGN_SYSTEM.md`), superseding the `dark mode` exclusion in line 110 and replacing the `2px teal outline` above with the `#8EA8D8` cool-blue selection outline (`1px` border + `1px` inset ring on `--surface-elevated` `#232326`, or `2px` inset left bar on compact mobile step rows). All product journeys, canonical dataset figures, freshness semantics, and `R01–R20` functional requirements remain unchanged.

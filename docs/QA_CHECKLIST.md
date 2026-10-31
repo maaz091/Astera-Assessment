@@ -1,6 +1,6 @@
 # QA checklist
 
-Status: acceptance plan only. No application tests have run; unchecked boxes are intentional. Record actual result, viewport/browser and issue reference during implementation. R/U IDs trace to PRODUCT_SPEC. Required defects block delivery; optional polish does not.
+Status: Chat, Dashboard, `/style-guide`, `/components`, and the Neutral Carbon visual redesign are implemented and verified through commit `f59b7b2`; Pipeline Detail interactive journeys remain pending Stage 3. R/U IDs trace to PRODUCT_SPEC. Required defects block delivery; optional polish does not.
 
 ## Requirements and main journeys
 
@@ -83,4 +83,17 @@ Run the three main journeys at every required width. Heights are test recommenda
 - [ ] Include compiled HTML/CSS/JS, README and note in one folder; verify extracted zip works. Exclude node_modules, caches, tmp screenshots and secrets.
 - [ ] Applicant supplies name/university/batch; archive name follows name_uni_batch.zip.
 - [ ] R02/R03/R20: record actual time, deadline wording and applicant-owned Reply All submission. Never mark email sent without evidence.
-- [ ] U03: planning delivery contains exactly the six requested documents, no installed dependencies, application source or React components.
+- [x] U03: initial planning delivery contained the six requested documents prior to implementation authorization.
+
+## Executed verification log (through commit `f59b7b2`)
+
+Verified via `tsc --noEmit`, `next build` (`out/` static export), WCAG 2.2 luminance calculations, and headless Edge Playwright automation across `375×812`, `768×1024`, `1024×768`, and `1440×900` (`tmp/final-*.png`):
+
+- **Passed**:
+  - `R05 / R06`: Default Chat route (`/`), suggested prompts, Enter-to-send monthly query, regional/monthly charts + factual summaries, `View values` disclosure with `Attainment`, and honest unsupported-prompt fallback.
+  - `R07`: Idempotent Pin in Chat, `View dashboard →` navigation, reload persistence (`studio-chat-v1`), saved-scope independence under overview filter changes, Unpin removal + focus management, and corrupt-storage session fallback.
+  - `R08`: Dashboard (`/dashboard/`) three editorial KPIs + two shared charts; all 10 quarter × region combinations verified at all 4 widths (`40/40` exact canonical calculations) plus URL query (`?period=&region=`) reload restoration.
+  - `R14 / R15 / R16 / U01 / U02`: Static HTML/CSS/JS export in `out/`, zero horizontal overflow across all 4 viewports on `/`, `/dashboard/`, `/components/`, and `/style-guide/`, `>=44px` interactive control heights, `Data trail` modal Escape/backdrop close + trigger focus restoration, and verified Neutral Carbon contrast (`#F4F4F5` `15.96:1`, `#A1A1AA` `6.84:1`, `#8EA8D8` `7.30:1` on `#19191C`; `#101012` ink on `#8EA8D8` `7.91:1`).
+- **Pending next stages**:
+  - `R09 / R10 / R11 / R12`: Full Pipeline Detail route, live `Filter`/`Join` editing + validation + dirty guards, `Save` vs `Run` runtime state transitions (`Running` / `Succeeded` / `Failed` / `Scheduled`), and origin-card return navigation.
+  - `R17 / R18 / R19 / R20`: Final `README` polish, one-page design note, `name_uni_batch.zip` archive packaging, and physical iOS Safari check (disclosed as viewport-emulated so far).

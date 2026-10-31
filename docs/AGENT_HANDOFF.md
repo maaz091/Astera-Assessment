@@ -77,3 +77,21 @@ Chat and Dashboard share validated persistence helpers for `studio-chat-v1`. Pin
 Verification: production build and `npm run typecheck` pass. Playwright/Edge tested 375, 768, 1024 and 1440px: all 10 quarter/region combinations at every width (40 total), exact KPI values, filter URL refresh, Chat pin → Dashboard, unchanged saved scope under overview filters, unpin persistence and Chat state, trail context/Escape/focus return, style-guide/component gallery regressions, corrupt-storage recovery, no page errors and no horizontal overflow. Screenshots inspected for phone, tablet and desktop. Verification script/screenshots are in ignored `tmp/dashboard-verify.cjs` and `tmp/dashboard-*.png`.
 
 Remaining: Pipeline Detail/edit/validate/save/rerun and runtime transitions are intentionally unimplemented. Current execution/freshness are the approved fixed demo state, not a live scheduler. Physical iOS touch/keyboard verification and final assessment packaging remain pending. No new libraries. Stop after this Dashboard commit.
+
+
+## Neutral Carbon visual redesign handoff (current)
+
+Supersedes `## Dashboard handoff (current)` as the latest checkpoint and replaces all earlier light/"Fieldnotes"/teal references. Commit `f59b7b2` replaced both the initial green-and-cream theme and a discarded navy/periwinkle `/design-lab` trial with the **Neutral Carbon** dark visual system documented in `docs/DESIGN_SYSTEM.md`:
+
+- **Tokens & typography (`app/layout.tsx`, `app/globals.css`)**: Self-hosted `Geist Sans` (`400`, `500`, `600`, `--font-sans`) with `tabular-nums lining-nums` on all metrics/axes/tables. Pure neutral surfaces (`#101012` canvas, `#141416` nav/tier, `#19191C` primary surface, `#232326` elevated, `#303034` separators, `#43434A` control borders), `#F4F4F5` / `#A1A1AA` / `#77777F` text, and one restrained `#8EA8D8` cool-blue accent (`#101012` dark ink on primary buttons at `7.91:1`).
+- **Live component architecture (`src/ui.tsx`, `src/charts.tsx`, `src/chat.tsx`, `src/dashboard.tsx`)**:
+  - `Shell` uses a `220px` desktop rail, `76px` tablet rail (`768–1199px`), and `48px` top brand bar + `60px` bottom bar on phone (`<=767px`).
+  - `KpiCard` renders inside a unified hairline-divided `.kpi-grid` (`.kpi-item`), not boxed `.card` tiles.
+  - `ChartCard` uses a clean `$0–$400k` regional scale with `#8EA8D8` bars, `2px` `#F4F4F5` target ticks, and signed tabular variance text (`+$30k`, `-$60k`); `MonthlyChart` uses `$0–$450k` (all regions) or `$0–$150k` (single region) with direct point value labels (`$360k`, `$400k`, `$440k`); `ValuesTable` includes `Attainment`.
+  - `Trail` renders a structured 4-step lineage modal (`Behind this answer`) with plain-text schema keys and mismatch diagnostic.
+  - `PipelineSequencePreview` (`src/ui.tsx`) and `.pipeline-*` / `.inspector-*` / `.field-group` styles (`app/globals.css`, previewed on `/components/`) already establish directional step connectors, `#8EA8D8` selected framing, inspector `dl`/form layout, and mobile hairline step rows for reuse in **Pipeline Detail**.
+- **Strict visual rules for next stage (Pipeline Detail)**:
+  - Do **not** reintroduce navy/blue-tinted dark backgrounds, rainbow/periwinkle/salmon chart fills, nested cards-inside-cards, `999px` pill badges on ordinary metadata/deltas/counts, monospace on metrics/timestamps/labels, or uppercase tracked eyebrows.
+  - Keep `Badge` (`4px` radius, semantic colours) strictly on pipeline execution statuses (`Running`, `Succeeded`, `Failed`, `Scheduled`).
+  - Maintain `>=44px` interactive hit heights (`16px` mobile form inputs) and zero horizontal overflow across `375`, `768`, `1024`, and `1440px`.
+- **Remaining work**: Implement **Pipeline Detail** (enable `Pipeline` nav + `Trail` step links, shared runtime/config store so editing `Filter regions` or `Join targets` -> `region_id`, validating, saving, rerunning, and scheduling updates Chat + Dashboard snapshots and supports origin return navigation), then final README + one-page submission note (`R18`) + archive packaging. Final redesign screenshots are in ignored `tmp/final-*.png`.
