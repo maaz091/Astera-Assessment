@@ -1,109 +1,87 @@
-# Design system: Fieldnotes
+# Design system: Neutral Carbon
 
-## Direction comparison and selection
+## Visual direction
 
-Both directions are original concepts developed from the brief, without inspecting an existing Astera UI.
+Studio uses a neutral, typography-led dark analytical workspace designed for enterprise sales reporting and inspectable pipeline workflows. Visual hierarchy comes from typographic scale, measured contrast, deliberate spacing, and minimal structural separators rather than coloured tiles, gradients, glow effects, or decorative chrome.
 
-| Criterion | A — Fieldnotes (selected) | B — Signal room |
+Core principles:
+- **Neutral foundation**: Pure carbon/zinc neutrals (`#101012` through `#303034`) with zero navy or cyberpunk tint.
+- **Restrained product accent**: One muted cool-blue accent (`#8EA8D8`) reserved for primary actions, active navigation, selection, and the primary revenue series.
+- **Editorial data typography**: Tabular lining numerals in `Geist Sans` (`400`, `500`, `600`) instead of monospace metrics or bolded labels.
+- **Whitespace before containers**: Headline KPIs sit in a unified hairline-divided strip rather than heavy individual cards; ordinary metadata uses plain sentence-case text instead of pill badges.
+
+---
+
+## Colour tokens & verified contrast
+
+Contrast ratios below are computed via WCAG 2.2 relative luminance against the primary content surface (`#19191C`) and application canvas (`#101012`). Small essential text targets `>= 4.5:1`; meaningful graphical marks and controls target `>= 3.0:1`.
+
+| Token | Hex | Usage & verified contrast |
 | --- | --- | --- |
-| Visual language | Warm off-white workspace, white panels, ink typography, restrained teal; spacious editorial hierarchy | Deep navy navigation and pipeline surfaces, cool white analytics panels, blue accents; compact operational hierarchy |
-| Hierarchy | One obvious action per context; business answer before technical metadata | Status and operational controls first; excellent for constant monitoring, less natural for chat-first users |
-| Typography | System sans, large concise headings, tabular numerals, generous line height | Tighter sans with monospace metadata; more technical texture and greater density |
-| Usability | Familiar forms and quiet trail footer; reads comfortably on phone | Strong region separation, but more surface transitions and tighter controls need additional touch tuning |
-| Chart readability | One consistent white chart surface, dark marks and labels | Light charts remain readable, but moving between dark pipeline and light charts makes semantic colour consistency harder |
-| Accessibility | Simple surface/foreground pairs to validate, visible focus ring | Achievable, but needs separate dark/light focus, disabled and status tokens |
-| Time cost | Small token set, no theme infrastructure | Additional surface palette and more visual QA |
+| `--canvas` | `#101012` | Application background |
+| `--nav-bg` | `#141416` | Sidebar rail, compact freshness bar, recessed bar tracks |
+| `--surface` | `#19191C` | Chart containers, composer, modal dialogs |
+| `--surface-elevated` | `#232326` | Active navigation item, interactive hover, user message |
+| `--border` | `#303034` | Hairline separators, table dividers, chart grid lines |
+| `--border-strong` | `#43434A` | Resting input, select, and secondary button borders |
+| `--text` | `#F4F4F5` | Primary headings, KPI values, body copy (`15.96:1` on surface, `17.29:1` on canvas) |
+| `--text-secondary` | `#A1A1AA` | Labels, metadata, axis ticks, helper copy (`6.84:1` on surface, `7.42:1` on canvas) |
+| `--text-tertiary` | `#77777F` | Placeholders, disabled text, dashed target series (`3.95:1` on surface, `4.28:1` on canvas) |
+| `--accent` | `#8EA8D8` | Primary buttons (`7.91:1` vs `#101012` ink), active indicator, primary chart series (`7.30:1` on surface) |
+| `--accent-hover` | `#A2B9E3` | Primary button and link hover (`9.58:1` vs `#101012` ink) |
+| `--accent-ink` | `#101012` | High-contrast dark ink on `--accent` primary buttons |
+| `--status-success` / bg | `#7CC49B` / `#16231C` | `Succeeded` pipeline state (`7.92:1` internal contrast) |
+| `--status-warning` / bg | `#D9AE6B` / `#241E14` | Freshness caution accent (`8.04:1` internal contrast) |
+| `--status-failed` / bg | `#E0878C` / `#261719` | `Failed` pipeline state and join diagnostic accent (`6.57:1` internal contrast) |
+| `--status-scheduled` / bg | `#B59CE0` / `#1F1B29` | `Scheduled` pipeline state (`7.05:1` internal contrast) |
+| `--status-running` / bg | `#8EA8D8` / `#18202C` | `Running` pipeline state (`6.82:1` internal contrast) |
 
-Select A because hierarchy, legibility and touch editing matter more than a monitoring-console aesthetic. B is not inherently inaccessible; it costs more verification without solving a required journey better. Avoid generic decoration: no gradients, oversized hero artwork, glass effects, dense card shadows or tiny uppercase labels. Distinction comes from proportion, restrained typography and the Data trail pattern.
+Semantic status badges (`4px` radius, icon + text) appear strictly on pipeline execution states (`Running`, `Succeeded`, `Failed`, `Scheduled`). Percentages, deltas, scopes, counts, and timestamps render as plain text.
 
-## Colour tokens
+---
 
-All values are final starting tokens. Verify computed contrast during implementation; do not assume a whole palette passes because a single pair does. Small text target ≥4.5:1; meaningful controls/graphics ≥3:1; focus visible against adjacent surfaces. These are chosen accessibility targets informed by [WCAG 2.2](https://www.w3.org/WAI/WCAG22/quickref/), not additional PDF requirements.
+## Typography and spacing rhythm
 
-| Token | Hex | Usage |
-| --- | --- | --- |
-| canvas | #F6F5F1 | Application background |
-| surface | #FFFFFF | Cards, inputs, inspector |
-| surface-subtle | #EFEFE9 | Read-only blocks and hovered neutral rows |
-| text | #202B2A | Titles, body, data labels |
-| text-secondary | #52615D | Metadata and helper text; never opacity-reduced |
-| border | #D9DED8 | Decorative dividers and card edges |
-| control-border | #7C8983 | Input edges and necessary boundaries |
-| accent | #176B5B | Primary buttons, active navigation text, revenue marks |
-| accent-hover | #105445 | Primary hover/pressed |
-| accent-subtle | #E7F2ED | Selected navigation/step background |
-| focus | #2459B8 | 3px outline, 2px offset |
-| success-text / surface | #246341 / #EDF6EF | Check icon + Succeeded |
-| warning-text / surface | #805400 / #FFF4D9 | Freshness caution and excluded scope |
-| error-text / surface | #A32D35 / #FCEEEF | Alert icon + Failed and field errors |
-| info-text / surface | #2459A6 / #EDF3FC | Running spinner + label |
-| scheduled-text / surface | #65508B / #F2EEF8 | Clock + Scheduled |
-| chart-secondary | #526CA2 | Optional second actual series only |
-| chart-target | #66736E | Dashed target line or target tick |
-| chart-grid | #E4E8E2 | Nonessential grid lines |
+Font family: self-hosted `Geist Sans` (`--font-sans`) loaded via `next/font/google` in weights `400`, `500`, and `600`, with system sans fallback. Financial figures, percentages, deltas, and axis ticks apply `font-variant-numeric: tabular-nums lining-nums` in `Geist Sans` (never monospace).
 
-Primary button text is white. Never use pale surfaces as meaningful chart marks without a contrasting border. Status combines icon, word and colour; do not make revenue red solely because a pipeline failed. Disabled controls use surface-subtle + text-secondary, a disabled attribute and an adjacent reason where needed; no global opacity reduction.
+| Role | Desktop | Tablet | Phone | Weight / line-height / tracking |
+| --- | --- | --- | --- | --- |
+| Page heading (`h1`) | `28px` | `28px` | `24px` | `600` / `1.2` / `-0.022em` |
+| KPI value (`.kpi-value`) | `34px` | `30px` | `26px` | `600` / `1.1` / `-0.03em` (`tabular-nums`) |
+| Section heading (`h2`) | `18px` | `18px` | `18px` | `600` / `1.3` / `-0.015em` |
+| Card heading (`h2`) | `17px` | `17px` | `17px` | `600` / `1.3` / `-0.015em` |
+| Sub-heading (`h3`) | `15px` | `15px` | `15px` | `500` / `1.35` / normal |
+| Body copy | `15px` | `15px` | `15px` | `400` / `1.55` / normal |
+| Form controls (`select`, `textarea`) | `14px` (`16px` textarea) | `14px` | `16px` | `400–500` / `1.4` (prevents iOS focus zoom) |
+| Navigation & buttons | `14px` | `14px` (`11.5px` rail) | `14px` (`12px` dock) | `500` / `1.2` |
+| Metadata & chart labels | `13px` (`12px` ticks) | `13px` | `13px` | `400–500` / `1.45` |
 
-## Typography and rhythm
+All labels and headings use sentence case (no uppercase tracked eyebrows). Spacing follows the `4, 8, 12, 16, 24, 32, 40px` scale. Corner radii remain disciplined: `4px` status tags and bars, `6px` controls and status strip, `8px` primary cards and composer, `10px` modal dialog (`12px` top sheet on mobile).
 
-Font stack: `Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`. No font download; Inter is used only if locally available. Design and verify using the system fallback. Monospace only for field keys and formulas. Monetary and KPI numbers use tabular-nums.
-
-| Role | Desktop / tablet | Phone | Weight / line-height |
-| --- | --- | --- | --- |
-| Page title | 28px | 24px | 650 / 1.2 |
-| KPI value | 32px | 28px | 650 / 1.15 |
-| Section title | 20px | 20px | 600 / 1.3 |
-| Card title | 16px | 16px | 600 / 1.4 |
-| Body and input | 16px | 16px | 400 / 1.5 |
-| Button / compact label | 14px | 14px | 600 / 1.4 |
-| Metadata / chart label | 13px | 13px | 400 or 500 / 1.4 |
-
-No text below 13px; inputs stay 16px on phone to avoid focus zoom. Paragraph line length ≤68ch. Heading tracking -0.02em, body normal. Spacing scale: 4, 8, 12, 16, 20, 24, 32, 40, 48px. Page gap 24px desktop/tablet, 20px phone; internal card padding 24px desktop, 20px tablet, 16px phone; label-to-field 8px; field groups 20px. No arbitrary one-off spacing without a documented reason.
-
-Radii: input/button 8px; cards 12px; dialog 16px; status pills 999px. Borders 1px, selected step 2px (reserve space to prevent layout shift). Cards have no shadow. Dialog only: 0 16px 48px rgba(32,43,42,.16), backdrop rgba(20,30,28,.32). Icon size 18px or 20px, stroke 1.75; icon button target 44px. Layer order: base 0, sticky headers 10, mobile navigation 20; modal uses native top layer.
+---
 
 ## Responsive composition
 
-Breakpoints: phone <768px; tablet 768–1199px; desktop ≥1200px. Explicitly test 375, 768, 1024 and 1440. Grid children use min-width:0; never hide overflow to mask layout bugs.
+Tested across `1440px`, `1024px`, `768px`, and `375px` with zero horizontal overflow and `>= 44px` interactive hit targets:
 
-| Element | Phone | Tablet | Desktop |
+| Element | Phone (`<= 767px`) | Tablet (`768–1199px`) | Desktop (`>= 1200px`) |
 | --- | --- | --- | --- |
-| Navigation | Bottom bar: Chat, Dashboard, Pipeline, 64px + safe area; text labels visible | 72px rail with icon + short label, 64px targets | 208px sidebar with workspace name and full labels |
-| Content | 16px side inset, single column | 24px inset | 32px inset; max width 1200px |
-| Chat | Full width; composer in document/sticky bottom above nav; keyboard must not cover it | Centred conversation, max 760px | Centred conversation, max 800px |
-| KPI cards | Revenue full width; other two side by side, labels may wrap | Three equal columns | Three equal columns |
-| Charts | Single column, bar min height 248px; line 224px | Two equal columns only if each has ≥300px; otherwise stack | Two equal columns, plot min height 260px |
-| Filters | Period and region stacked or two rows; full-width selects | Inline labelled selects, wrapping allowed | Inline aligned to title region |
-| Pipeline | Ordered list → full-screen step dialog | Vertical step list + inspector; 20px gap | Connected four-card chain + 320px inspector; 24px gap |
-| Trail | Bottom sheet, max 85dvh | Centred 480px dialog | Centred 480px dialog |
+| Navigation | `48px` top brand bar + `60px` bottom bar (`Chat`, `Dashboard`, `Pipeline`) with safe-area inset | `76px` left icon+label rail | `220px` left sidebar with brand, primary nav, and system reference links |
+| Workspace container | `16px` horizontal inset, `88px` bottom clearance | `24px` inset | `40px` inset, `1120px` max width |
+| Chat column | Full content width | Centered `720px` max width | Centered `720px` max width |
+| Dashboard filters | Two-column full-width selects (`16px` text) | Inline labelled selects (stacked note below `960px`) | Inline aligned beneath header with right-aligned scope note |
+| KPI presentation | Hairline-divided editorial rows (label/detail left, value right) | Three hairline-divided columns | Three hairline-divided columns |
+| Overview & saved charts | Single column | Single column `768–959px`; two columns `960–1199px` | Two equal columns (`24px` gap) |
+| Data trail | Bottom sheet (`max-height: 86dvh`) | Centered `520px` modal dialog | Centered `520px` modal dialog |
+| Pipeline sequence | Native vertical step rows + stacked inspector | `2×2` step grid + inspector | 4-step horizontal directional chain + inspector |
 
-At 1440px the 208px rail leaves 1232px; 64px page insets leave 1168px. The pipeline's inspector + gap leaves 824px for four 188px cards and three 24px connectors. At tablet widths use vertical list and minmax(0,1fr) inspector, not that horizontal chain. At 375px there are 343px of content; reserve 72px region labels, 48px value labels and remaining plot width. Use a deliberate sparse scale, not clipped labels.
+---
 
-Content has bottom padding equal to mobile nav + safe area + 24px. Use min-height:100dvh with 100vh fallback. Avoid a fixed composer that fights the virtual keyboard. Modal editor uses its own scrolling body and sticky actions; focus field scrolls into view. At 200% zoom allow breakpoint reflow; no page-level horizontal scroll. Rotate tablet without losing selection or form draft.
+## Component & chart rules
 
-## Component states
-
-| Component | Required states and treatment |
-| --- | --- |
-| Button | Default; pointer hover darkens; pressed uses same dark surface; focus-visible ring; disabled with reason; busy text + spinner and duplicate activation blocked |
-| Navigation | Active teal text + pale fill + aria-current; nonactive dark label; full touch target; hover supplementary |
-| Form input | Default border; focus ring; error border + message linked via aria-describedby; read-only labelled; dirty form Save enabled; pristine Save disabled |
-| Checkbox | Native semantics; 44px row target; checked icon; selected label retained; not colour only |
-| Chart card | Ready; loading reserved plot height and aria-busy; no data with reset; pipeline failure keeps last chart and warning; unavailable snapshot explains reason |
-| Step | Number, title and status label always visible; selected outline; failed error icon; downstream skipped textual label |
-| Dialog | Labelled title, visible close/cancel, initial focus on title or first relevant control, trapped focus, Escape handling, restored trigger focus |
-| Toast | role=status, concise text, 5-second duration; persistent card/button state communicates the same result after dismissal |
-
-Dirty dialog Escape/Close opens a confirmation within the same dialog surface, not stacked modal dialogs: Keep editing, Discard changes. Save remains in editor footer. Route navigation while dirty uses the same guard. Error messages describe recovery: “Target names do not match source IDs. Choose region_id, save, then run again.”
-
-## Charts
-
-Regional chart order North, South, East, West remains stable across screens. Horizontal bars start at zero. Shared domain includes max(actual,target) ×1.1; labels show $330k etc., table shows full USD. Target marker per row is a 2px dark vertical tick, labelled in legend. Below-target rows show signed shortfall text; no red/green encoding requirement. On narrow screens use zero and max ticks, not rotated text.
-
-Monthly line: three month labels for each selected quarter, zero-based y axis, solid teal actual with circle markers and dashed dark target with square markers. Legend text “Revenue” / “Target”. Never smooth curves or animate numbers; that would imply precision or intermediate values. Visible values table has Month/Region, Revenue, Target, Attainment columns and a caption identifying scope. SVG has accessible title/description; table is canonical equivalent. No tooltip is needed for essential values.
-
-Only brief 120–160ms opacity/colour transitions; no layout-shifting entry animation. Respect prefers-reduced-motion by disabling transitions and replacing spinner rotation with static progress icon plus Running text. All required actions remain visible on touch; hover adds no exclusive information.
-
-## Desktop flow refinement
-
-Connected steps use visible directional arrowheads, a Selected text label plus 2px accent outline, and named upstream/downstream relationships in the inspector. Preserve the four-step scope and all existing Fieldnotes tokens. Failure warnings retain chart usability and expose Data trail; operational detail does not dominate the welcome screen.
+- **Charts**:
+  - *Regional comparison*: Ordered `North, South, East, West` on a clean round `$0–$400k` domain (`$0, $200k, $400k` on phone; `$100k` steps on desktop/tablet). Single `#8EA8D8` bar fill inside a recessed `#141416` track, `2px` `#F4F4F5` vertical target marker with `1px` dark halo, and tabular revenue + signed target variance text (`+$30k`, `−$60k`) so comparison never depends on colour alone.
+  - *Monthly trend*: Clean round `$0–$450k` domain (all regions) or `$0–$150k` domain (single region), `1px` `#303034` horizontal grid lines, dashed `#77777F` target line with square `#A1A1AA` markers, and solid `#8EA8D8` revenue line with haloed circle markers.
+  - *Values disclosure*: Semantic HTML `<table>` with scope `<caption>` and `Region/Month`, `Revenue`, `Target`, and `Attainment` columns.
+- **Provenance & freshness**: Failed pipeline notices stay understated (`2px` warning left accent on `#141416`) so business answers remain primary while preserving access to Data trail.
+- **Motion & focus**: `120ms` colour/border transitions disabled under `prefers-reduced-motion: reduce`; `2px solid #8EA8D8` `:focus-visible` outline (`2px` offset) across all interactive controls.
