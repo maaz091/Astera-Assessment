@@ -2,5 +2,13 @@ node_modules/
 .next/
 out/
 tmp/
+dist/
+reference/
+*.zip
 *.tsbuildinfo
 .npm-cache/
+.env
+.env.*
+.DS_Store
+Thumbs.db
+Desktop.ini
