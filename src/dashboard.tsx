@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {usePipeline,Freshness,time} from './pipeline-store';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { ChartCard } from './chat';
@@ -46,6 +47,7 @@ export function KpiCard({
 }
 
 export default function Dashboard() {
+  const runtime=usePipeline();
   const [scope, setScope] = useState<Scope>(defaultScope);
   const [pins, setPins] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
@@ -155,12 +157,12 @@ export default function Dashboard() {
 
       <section className="dataset-status" aria-label="Dataset freshness and pipeline status">
         <div className="publication">
-          <strong>Published 31 Oct 2026, 09:30 PKT (15m ago)</strong>
-          <span>Showing last successful data · Inspect Join issue in Data trail</span>
+          <strong><Freshness/></strong>
+          <span>{runtime.error?'Showing last successful data · Inspect Join issue in Data trail':'Showing last successfully published data'}</span>
         </div>
         <div className="execution">
-          <Badge status="Failed" />
-          <span>Run 09:42 PKT · Clock 09:45 PKT</span>
+          <Badge status={runtime.status} />
+          <span>Run {time(runtime.attempt)} · Clock {time(runtime.clock)}</span>
         </div>
       </section>
 

@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import {usePipeline,Freshness} from './pipeline-store';
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, Check, Pin, Send } from 'lucide-react';
 import { MonthlyChart, ValuesTable } from './charts';
-import { parse, Query, scopeLabel, series, summary } from './data';
+import { parse, Query, scopeLabel, series, summary, kpis } from './data';
 import { readChat, writeChat } from './persistence';
 import { Button, Card, Trail } from './ui';
 
@@ -23,6 +24,7 @@ export function ChartCard({
   overview?: boolean;
   saved?: boolean;
 }) {
+  usePipeline();
   const rows = series(query);
   const rawMax = Math.max(...rows.flatMap(r => [r.value, r.target]), 100000);
   const ceiling = Math.max(400000, Math.ceil((rawMax * 1.08) / 100000) * 100000);
@@ -65,6 +67,7 @@ export function ChartCard({
 
       {!overview && <p className="answer-summary">{summary(query)}</p>}
 
+      {kpis(query).target===0&&<p role="status">No data: this region is excluded by the pipeline. Choose another region in the overview filters.</p>}
       <div className="legend">
         <span>
           <i className="legend-revenue" aria-hidden="true" /> Revenue
@@ -122,9 +125,7 @@ export function ChartCard({
         <ValuesTable query={query} />
 
         <p className="chart-freshness meta">
-          {overview
-            ? 'Published 31 Oct, 09:30 PKT · Last successful data'
-            : 'Published 31 Oct, 09:30 PKT · Latest run failed — showing last successful data'}
+          <Freshness/>
         </p>
 
         <Trail context={`${title} · ${scopeLabel(query)}`} />

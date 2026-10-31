@@ -7,9 +7,11 @@ export function parse(text: string): Query | null {
   if (!/sales|target|region|revenue/i.test(text)) return null;
   return { kind: /monthly|month/i.test(text) ? 'monthly' : 'region', quarter: /q2/i.test(text) ? 2 : 3 };
 }
+let publishedRegions: readonly Region[] = regions;
+export function setPublishedRegions(value: Region[]) { publishedRegions = value; }
 export function series(q: Query) {
   const rows = sales.slice(q.quarter === 2 ? 0 : 3, q.quarter === 2 ? 3 : 6);
-  const indices = regions.map((_, i) => i).filter(i => !q.region || q.region === 'all' || regions[i] === q.region);
+  const indices = regions.map((_, i) => i).filter(i => publishedRegions.includes(regions[i]) && (!q.region || q.region === 'all' || regions[i] === q.region));
   return q.kind === 'region'
     ? indices.map(i => ({ label: regions[i] as string, value: rows.reduce((s, r) => s + r[i], 0) * 1000, target: rows.length * 100000 }))
     : rows.map((r, i) => ({ label: (q.quarter === 2 ? ['Apr', 'May', 'Jun'] : ['Jul', 'Aug', 'Sep'])[i], value: indices.reduce((s, j) => s + r[j], 0) * 1000, target: indices.length * 100000 }));
@@ -24,6 +26,7 @@ export function kpis(q: Query) {
 }
 export function summary(q: Query) {
   const data = series({ ...q, kind: 'region' });
+  if (!data.length) return 'No data: this region is excluded by the pipeline.';
   const missed = data.filter(r => r.value < r.target);
   const detail = missed.length ? missed.map(r => `${r.label} missed target by ${money(r.target - r.value)}`).join(' and ') + '.' : 'Every region in this view met its target.';
   return `${detail} Combined revenue was ${money(data.reduce((s, r) => s + r.value, 0))}.`;

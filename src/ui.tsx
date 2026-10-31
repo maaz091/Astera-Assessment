@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {usePipeline,steps,stepStatus,Freshness} from './pipeline-store';
 import { usePathname } from 'next/navigation';
 import {
   AlertCircle,
@@ -14,7 +15,7 @@ import {
   Workflow,
   X,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export function Button({
   className = '',
@@ -86,97 +87,10 @@ const TRAIL_STEPS = [
   },
 ] as const;
 
-export function Trail({ context }: { context?: string }) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const trigger = useRef<HTMLButtonElement>(null);
-
-  return (
-    <>
-      <button
-        ref={trigger}
-        type="button"
-        className="trail"
-        onClick={() => ref.current?.showModal()}
-      >
-        <span className="trail-label">Data trail · 4 steps</span>
-        <span className="trail-status">
-          <Badge status="Failed" />
-          <ArrowUpRight size={15} aria-hidden="true" />
-        </span>
-      </button>
-
-      <dialog
-        aria-label="Data trail"
-        ref={ref}
-        onClose={() => trigger.current?.focus({ preventScroll: true })}
-        onClick={e => {
-          if (e.target === ref.current) ref.current.close();
-        }}
-      >
-        <div className="dialog-header">
-          <div>
-            <h2>Behind this answer</h2>
-            <p className="trail-context">{context || 'Regional sales performance'}</p>
-          </div>
-          <button
-            type="button"
-            className="icon-close"
-            aria-label="Close data trail"
-            onClick={() => ref.current?.close()}
-          >
-            <X size={18} aria-hidden="true" />
-          </button>
-        </div>
-
-        <p className="trail-summary">
-          Pipeline · Regional sales performance. Latest run failed at{' '}
-          <strong>Join targets</strong>; your last successful dataset remains active.
-        </p>
-
-        <ol className="steps">
-          {TRAIL_STEPS.map(item => (
-            <li key={item.id} className={item.status === 'Failed' ? 'step-row is-failed' : 'step-row'}>
-              <span className="step-num">{item.step}</span>
-              <div className="step-body">
-                <div className="step-title-line">
-                  <strong>{item.title}</strong>
-                  {item.status === 'Failed' ? (
-                    <Badge status="Failed" />
-                  ) : (
-                    <span className={`step-state ${item.status.toLowerCase()}`}>
-                      {item.status === 'Succeeded' && <Check size={13} aria-hidden="true" />}
-                      {item.status}
-                    </span>
-                  )}
-                </div>
-                <span className="step-detail">{item.detail}</span>
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        <div className="diagnostic-block">
-          <strong>Join fields do not match</strong>
-          <p>
-            Source <code>region_id</code> was matched against target <code>region_name</code>. The
-            next implementation stage will enable changing the target field to{' '}
-            <code>region_id</code> and rerunning.
-          </p>
-        </div>
-
-        <div className="dialog-footer">
-          <p className="meta">
-            Last successful refresh: 31 Oct 2026, 09:30 PKT
-            <br />
-            Latest attempt: 09:42 PKT · Demo clock: 09:45 PKT
-          </p>
-          <Button className="secondary" onClick={() => ref.current?.close()}>
-            Close data trail
-          </Button>
-        </div>
-      </dialog>
-    </>
-  );
+export function Trail({context}:{context?:string}) {
+ const runtime=usePipeline();const ref=useRef<HTMLDialogElement>(null);const trigger=useRef<HTMLButtonElement>(null);
+ function origin(){try{sessionStorage.setItem('pipeline-origin',JSON.stringify({url:location.pathname+location.search,context,scroll:scrollY,index:Array.from(document.querySelectorAll('.trail')).indexOf(trigger.current!)}));}catch{}ref.current?.close();}
+ return <><button ref={trigger} className="trail" onClick={()=>ref.current?.showModal()}><span>Data trail · 4 steps</span><Badge status={runtime.status}/></button><dialog ref={ref} aria-label="Data trail" onClose={()=>trigger.current?.focus({preventScroll:true})}><h2>Behind this answer</h2><p>{context}</p><p><Freshness/></p><ol className="steps">{steps.map(step=><li key={step.id}><Link className="text-link" onClick={origin} href={'/pipeline/?step='+step.id}>{step.title} → {stepStatus(step.id,runtime)}</Link></li>)}</ol>{runtime.error&&<p className="diagnostic-block">{runtime.error}</p>}<Link className="button" onClick={origin} href="/pipeline/?step=join">Open pipeline</Link><Button className="secondary" onClick={()=>ref.current?.close()}>Close data trail</Button></dialog></>;
 }
 
 export function PipelineSequencePreview() {
@@ -278,6 +192,7 @@ export function PipelineSequencePreview() {
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  useEffect(()=>{if(path.startsWith('/pipeline'))return;try{const origin=JSON.parse(sessionStorage.getItem('pipeline-origin')||'null');if(origin?.url===location.pathname+location.search){const timer=setTimeout(()=>{window.scrollTo(0,origin.scroll);(document.querySelectorAll('.trail')[origin.index] as HTMLElement)?.focus({preventScroll:true});sessionStorage.removeItem('pipeline-origin');},200);return()=>clearTimeout(timer);}}catch{}},[path]);
 
   return (
     <>
@@ -311,10 +226,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <LayoutDashboard size={18} aria-hidden="true" />
             <span>Dashboard</span>
           </Link>
-          <button type="button" disabled title="Planned for the next stage">
+          <Link href="/pipeline/" className={path.startsWith('/pipeline')?'active':''}>
             <Workflow size={18} aria-hidden="true" />
             <span>Pipeline</span>
-          </button>
+          </Link>
         </nav>
 
         <div className="devlinks">
