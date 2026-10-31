@@ -20,7 +20,7 @@ export function MonthlyChart({ query }: { query: Query }) {
 
   useEffect(() => {
     const observer = new ResizeObserver(([entry]) =>
-      setWidth(Math.max(260, Math.round(entry.contentRect.width)))
+      setWidth(Math.max(240, Math.round(entry.contentRect.width)))
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();

@@ -36,6 +36,11 @@
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 html,
 body {
   margin: 0;
@@ -62,8 +67,16 @@ textarea {
 }
 
 button,
-a {
+a,
+summary,
+select,
+label {
   -webkit-tap-highlight-color: transparent;
+}
+
+button,
+summary {
+  user-select: none;
 }
 
 button {
@@ -146,8 +159,11 @@ small {
 
 .skip {
   position: fixed;
-  top: -120px;
+  top: 12px;
   left: 16px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   background: var(--accent);
   color: var(--accent-ink);
   font-weight: 500;
@@ -156,8 +172,10 @@ small {
   z-index: 100;
 }
 
-.skip:focus {
-  top: 12px;
+.skip:not(:focus-visible) {
+  transform: translateY(-200%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Application shell & navigation */
@@ -464,7 +482,16 @@ select:hover {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
+  gap: 12px;
+}
+
+.card-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.card-heading .button {
+  flex-shrink: 0;
 }
 
 .card-heading h2 {
@@ -1009,6 +1036,14 @@ dialog::backdrop {
   gap: 8px;
 }
 
+.fallback-prompts .button {
+  white-space: normal;
+  text-align: left;
+  justify-content: flex-start;
+  height: auto;
+  padding-block: 10px;
+}
+
 .pending-note {
   font-size: 14px;
   color: var(--text-secondary);
@@ -1103,6 +1138,8 @@ dialog::backdrop {
   gap: 6px;
   min-height: 44px;
   font-size: 14px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .text-link:hover,
@@ -1710,13 +1747,45 @@ dialog::backdrop {
     font-size: 13px;
   }
 
+  body {
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
   main {
-    padding: 24px 16px calc(88px + env(safe-area-inset-bottom));
+    padding: 20px 16px calc(88px + env(safe-area-inset-bottom));
   }
 
   h1,
   .specimen-h1 {
-    font-size: 24px;
+    font-size: 23px;
+  }
+
+  h2,
+  .specimen-h2 {
+    font-size: 16.5px;
+  }
+
+  .card-heading h2,
+  .inspector-head h2 {
+    font-size: 16px;
+  }
+
+  .page-heading p,
+  .answer-summary,
+  .overview-summary,
+  .question {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  table {
+    font-size: 12.5px;
+  }
+
+  th,
+  td {
+    padding: 8px 4px;
   }
 
   select {
@@ -1830,10 +1899,6 @@ dialog::backdrop {
 
   .card {
     padding: 18px 16px;
-  }
-
-  .card-heading {
-    flex-wrap: wrap;
   }
 
   .bar-row {
