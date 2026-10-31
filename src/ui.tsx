@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {usePipeline,steps,stepStatus,Freshness} from './pipeline-store';
+import { usePipeline, steps, stepStatus, Freshness } from './pipeline-store';
 import { usePathname } from 'next/navigation';
 import {
   AlertCircle,
@@ -87,10 +87,120 @@ const TRAIL_STEPS = [
   },
 ] as const;
 
-export function Trail({context}:{context?:string}) {
- const runtime=usePipeline();const ref=useRef<HTMLDialogElement>(null);const trigger=useRef<HTMLButtonElement>(null);
- function origin(){try{sessionStorage.setItem('pipeline-origin',JSON.stringify({url:location.pathname+location.search,context,scroll:scrollY,index:Array.from(document.querySelectorAll('.trail')).indexOf(trigger.current!)}));}catch{}ref.current?.close();}
- return <><button ref={trigger} className="trail" onClick={()=>ref.current?.showModal()}><span>Data trail · 4 steps</span><Badge status={runtime.status}/></button><dialog ref={ref} aria-label="Data trail" onClose={()=>trigger.current?.focus({preventScroll:true})}><h2>Behind this answer</h2><p>{context}</p><p><Freshness/></p><ol className="steps">{steps.map(step=><li key={step.id}><Link className="text-link" onClick={origin} href={'/pipeline/?step='+step.id}>{step.title} → {stepStatus(step.id,runtime)}</Link></li>)}</ol>{runtime.error&&<p className="diagnostic-block">{runtime.error}</p>}<Link className="button" onClick={origin} href="/pipeline/?step=join">Open pipeline</Link><Button className="secondary" onClick={()=>ref.current?.close()}>Close data trail</Button></dialog></>;
+export function Trail({ context }: { context?: string }) {
+  const runtime = usePipeline();
+  const ref = useRef<HTMLDialogElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+
+  function origin() {
+    try {
+      sessionStorage.setItem(
+        'pipeline-origin',
+        JSON.stringify({
+          url: location.pathname + location.search,
+          context,
+          scroll: scrollY,
+          index: Array.from(document.querySelectorAll('.trail')).indexOf(trigger.current!),
+        }),
+      );
+    } catch {}
+    ref.current?.close();
+  }
+
+  return (
+    <>
+      <button
+        ref={trigger}
+        type="button"
+        className="trail"
+        onClick={() => ref.current?.showModal()}
+      >
+        <span className="trail-label">Data trail · 4 steps</span>
+        <span className="trail-status">
+          <Badge status={runtime.status} />
+          <ArrowUpRight size={15} aria-hidden="true" />
+        </span>
+      </button>
+
+      <dialog
+        ref={ref}
+        aria-label="Data trail"
+        onClick={e => {
+          if (e.target === ref.current) ref.current?.close();
+        }}
+        onClose={() => trigger.current?.focus({ preventScroll: true })}
+      >
+        <div className="dialog-header">
+          <div>
+            <h2>Behind this answer</h2>
+            {context ? <p className="trail-context">{context}</p> : null}
+          </div>
+          <button
+            type="button"
+            className="icon-close"
+            aria-label="Dismiss data trail"
+            onClick={() => ref.current?.close()}
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
+        </div>
+
+        <p className="trail-summary">
+          <Freshness />
+        </p>
+
+        <ol className="steps">
+          {steps.map((step, idx) => {
+            const status = stepStatus(step.id, runtime);
+            return (
+              <li key={step.id}>
+                <Link
+                  className={`step-row step-link ${status === 'Failed' ? 'is-failed' : ''}`.trim()}
+                  onClick={origin}
+                  href={`/pipeline/?step=${step.id}`}
+                >
+                  <span className="step-num">0{idx + 1}</span>
+                  <span className="step-body">
+                    <span className="step-title-line">
+                      <strong>{step.title}</strong>
+                      {status === 'Failed' ? (
+                        <Badge status="Failed" />
+                      ) : (
+                        <span className={`step-state ${status.toLowerCase()}`}>
+                          {status === 'Succeeded' && <Check size={13} aria-hidden="true" />}
+                          {status === 'Running' && (
+                            <LoaderCircle size={13} className="spin" aria-hidden="true" />
+                          )}
+                          {status}
+                        </span>
+                      )}
+                    </span>
+                    <span className="step-detail">{step.description}</span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+
+        {runtime.error && (
+          <div className="diagnostic-block">
+            <strong>Latest run diagnostic</strong>
+            <p>{runtime.error}</p>
+          </div>
+        )}
+
+        <div className="dialog-actions">
+          <Link className="button" onClick={origin} href="/pipeline/?step=join">
+            Open pipeline
+          </Link>
+          <Button className="secondary" onClick={() => ref.current?.close()}>
+            Close data trail
+          </Button>
+        </div>
+      </dialog>
+    </>
+  );
 }
 
 export function PipelineSequencePreview() {
@@ -192,7 +302,22 @@ export function PipelineSequencePreview() {
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  useEffect(()=>{if(path.startsWith('/pipeline'))return;try{const origin=JSON.parse(sessionStorage.getItem('pipeline-origin')||'null');if(origin?.url===location.pathname+location.search){const timer=setTimeout(()=>{window.scrollTo(0,origin.scroll);(document.querySelectorAll('.trail')[origin.index] as HTMLElement)?.focus({preventScroll:true});sessionStorage.removeItem('pipeline-origin');},200);return()=>clearTimeout(timer);}}catch{}},[path]);
+  useEffect(() => {
+    if (path.startsWith('/pipeline')) return;
+    try {
+      const origin = JSON.parse(sessionStorage.getItem('pipeline-origin') || 'null');
+      if (origin?.url === location.pathname + location.search) {
+        const timer = setTimeout(() => {
+          window.scrollTo(0, origin.scroll);
+          (document.querySelectorAll('.trail')[origin.index] as HTMLElement)?.focus({
+            preventScroll: true,
+          });
+          sessionStorage.removeItem('pipeline-origin');
+        }, 200);
+        return () => clearTimeout(timer);
+      }
+    } catch {}
+  }, [path]);
 
   return (
     <>
@@ -226,7 +351,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <LayoutDashboard size={18} aria-hidden="true" />
             <span>Dashboard</span>
           </Link>
-          <Link href="/pipeline/" className={path.startsWith('/pipeline')?'active':''}>
+          <Link
+            aria-current={path.startsWith('/pipeline') ? 'page' : undefined}
+            className={path.startsWith('/pipeline') ? 'active' : ''}
+            href="/pipeline/"
+          >
             <Workflow size={18} aria-hidden="true" />
             <span>Pipeline</span>
           </Link>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {usePipeline,Freshness} from './pipeline-store';
+import { usePipeline, Freshness } from './pipeline-store';
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, Check, Pin, Send } from 'lucide-react';
 import { MonthlyChart, ValuesTable } from './charts';
@@ -26,6 +26,7 @@ export function ChartCard({
 }) {
   usePipeline();
   const rows = series(query);
+  const empty = kpis(query).target === 0;
   const rawMax = Math.max(...rows.flatMap(r => [r.value, r.target]), 100000);
   const ceiling = Math.max(400000, Math.ceil((rawMax * 1.08) / 100000) * 100000);
   const half = Math.round(ceiling / 2000);
@@ -67,65 +68,75 @@ export function ChartCard({
 
       {!overview && <p className="answer-summary">{summary(query)}</p>}
 
-      {kpis(query).target===0&&<p role="status">No data: this region is excluded by the pipeline. Choose another region in the overview filters.</p>}
-      <div className="legend">
-        <span>
-          <i className="legend-revenue" aria-hidden="true" /> Revenue
-        </span>
-        <span>
-          <i className="legend-target" aria-hidden="true" /> Target
-        </span>
-      </div>
-
-      {query.kind === 'region' ? (
-        <div className="regional-plot">
-          <div className="bars">
-            {rows.map(r => {
-              const delta = r.value - r.target;
-              const deltaText =
-                delta < 0
-                  ? `−$${Math.abs(delta) / 1000}k`
-                  : delta > 0
-                    ? `+$${delta / 1000}k`
-                    : 'On target';
-              return (
-                <div className="bar-row" key={r.label}>
-                  <span className="bar-label">{r.label}</span>
-                  <div className="track">
-                    <div
-                      className="bar-fill"
-                      style={{ width: `${(r.value / ceiling) * 100}%` }}
-                    />
-                    <i
-                      className="target-tick"
-                      style={{ left: `${(r.target / ceiling) * 100}%` }}
-                    />
-                  </div>
-                  <div className="bar-metrics">
-                    <strong>${r.value / 1000}k</strong>
-                    <span className="bar-delta">{deltaText}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="bar-axis" aria-hidden="true">
-            <span>$0</span>
-            <span className="axis-mid">${quarter}k</span>
-            <span>${half}k</span>
-            <span className="axis-mid">${threeQuarter}k</span>
-            <span>${topTick}k</span>
-          </div>
+      {empty ? (
+        <div className="excluded-plot" role="status">
+          <p>
+            No data: this region is excluded by the pipeline. Choose another region in the overview
+            filters.
+          </p>
         </div>
       ) : (
-        <MonthlyChart query={query} />
+        <>
+          <div className="legend">
+            <span>
+              <i className="legend-revenue" aria-hidden="true" /> Revenue
+            </span>
+            <span>
+              <i className="legend-target" aria-hidden="true" /> Target
+            </span>
+          </div>
+
+          {query.kind === 'region' ? (
+            <div className="regional-plot">
+              <div className="bars">
+                {rows.map(r => {
+                  const delta = r.value - r.target;
+                  const deltaText =
+                    delta < 0
+                      ? `−$${Math.abs(delta) / 1000}k`
+                      : delta > 0
+                        ? `+$${delta / 1000}k`
+                        : 'On target';
+                  return (
+                    <div className="bar-row" key={r.label}>
+                      <span className="bar-label">{r.label}</span>
+                      <div className="track">
+                        <div
+                          className="bar-fill"
+                          style={{ width: `${(r.value / ceiling) * 100}%` }}
+                        />
+                        <i
+                          className="target-tick"
+                          style={{ left: `${(r.target / ceiling) * 100}%` }}
+                        />
+                      </div>
+                      <div className="bar-metrics">
+                        <strong>${r.value / 1000}k</strong>
+                        <span className="bar-delta">{deltaText}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="bar-axis" aria-hidden="true">
+                <span>$0</span>
+                <span className="axis-mid">${quarter}k</span>
+                <span>${half}k</span>
+                <span className="axis-mid">${threeQuarter}k</span>
+                <span>${topTick}k</span>
+              </div>
+            </div>
+          ) : (
+            <MonthlyChart query={query} />
+          )}
+        </>
       )}
 
       <div className="chart-footer">
         <ValuesTable query={query} />
 
         <p className="chart-freshness meta">
-          <Freshness/>
+          <Freshness />
         </p>
 
         <Trail context={`${title} · ${scopeLabel(query)}`} />
